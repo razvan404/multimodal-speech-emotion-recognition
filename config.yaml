@@ -1,0 +1,4 @@
+dataset:
+  name: "iemocap"
+  path: "data/IEMOCAP"
+  sessions: 1
