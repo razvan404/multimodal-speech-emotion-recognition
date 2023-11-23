@@ -46,12 +46,10 @@ class IemocapPreprocessor:
                         wav_file_name, emotion = info_line.strip().split("\t")[1:3]
                         if emotion == "xxx":
                             continue
-                        left_part, text = text_line.strip().split("]:")
+                        left_part, text = text_line.strip().split("]: ")
                         assert wav_file_name == left_part.split(" ")[0]
                         audios.append(wav_file_name)
                         emotions.append(emotion)
                         texts.append(text)
-
-        print(set(emotions))
 
         return pd.DataFrame(data={"audio": audios, "text": texts, "emotion": emotions})

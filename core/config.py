@@ -39,3 +39,7 @@ class CONFIG:
                 "file"
             ],
         )
+
+    @classmethod
+    def dataset_emotions(cls):
+        return cls._dict["dataset_specific"][cls._dict["dataset"]["name"]]["emotions"]
