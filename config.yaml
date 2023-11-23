@@ -1,4 +1,11 @@
+data_source:
+  path: "data"
 dataset:
-  name: "iemocap"
-  path: "data/IEMOCAP"
-  sessions: 1
+  name: "IEMOCAP"
+  specific:
+    sessions: 1
+dataloader:
+  batch_size: 16
+  shuffle: true
+train:
+  experiment_id: 1

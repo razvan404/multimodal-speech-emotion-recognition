@@ -1,0 +1,6 @@
+PyYAML~=6.0.1
+torch~=2.1.1
+scipy~=1.11.4
+numpy~=1.26.2
+black~=23.11.0
+matplotlib~=3.8.2
