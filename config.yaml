@@ -2,7 +2,11 @@ data_source:
   path: "data"
 dataset:
   name: "IEMOCAP"
-  specific:
+dataset_specific:
+  IEMOCAP:
+    preprocessed:
+      dir: "Preprocessed"
+      file: "audio_and_text.csv"
     sessions: 1
 dataloader:
   batch_size: 16

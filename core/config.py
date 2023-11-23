@@ -21,3 +21,21 @@ class CONFIG:
     @classmethod
     def dataloader_dict(cls):
         return cls._dict["dataloader"]
+
+    @classmethod
+    def dataset_preprocessed_dir_path(cls):
+        return os.path.join(
+            cls.dataset_path(),
+            cls._dict["dataset_specific"][cls._dict["dataset"]["name"]]["preprocessed"][
+                "dir"
+            ],
+        )
+
+    @classmethod
+    def dataset_preprocessed_file_path(cls):
+        return os.path.join(
+            cls.dataset_preprocessed_dir_path(),
+            cls._dict["dataset_specific"][cls._dict["dataset"]["name"]]["preprocessed"][
+                "file"
+            ],
+        )
