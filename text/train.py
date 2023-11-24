@@ -2,7 +2,6 @@ import torch
 import torch.nn as nn
 import transformers
 import matplotlib.pyplot as plt
-import numpy as np
 
 from torch.utils.data.dataloader import DataLoader
 from sklearn.metrics import confusion_matrix
@@ -13,7 +12,7 @@ from text.bert import BERT, Tokenizer
 
 class TextTrainer:
     _epochs_print = 20
-    _num_epochs = 8
+    _num_epochs = 10
 
     @classmethod
     def train(
@@ -49,7 +48,7 @@ class TextTrainer:
                 result = model(input_tokens, labels=emotion)
                 loss, logits = result[0], result[1]
                 loss.backward()
-                torch.nn.utils.clip_grad_norm(model.parameters(), 1.0)
+                torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
                 optimizer.step()
                 scheduler.step()
                 _, preds = torch.max(logits, 1)
@@ -63,14 +62,18 @@ class TextTrainer:
                         f"EPOCH {epoch} \tSTEP {train_step} \tTRAINING LOSS {last_epochs_loss / cls._epochs_print}  "
                         f"\tTRAINING ACC {last_epochs_acc / cls._epochs_print}"
                     )
+                    history_loss.append(last_epochs_loss / cls._epochs_print)
+                    history_acc.append(last_epochs_acc / cls._epochs_print)
+
                     last_epochs_loss = 0
                     last_epochs_acc = 0
 
-        indexes = list(range(len(history_loss)))
-        plt.plot(indexes, history_loss)
+        plt.title("Text Loss History")
+        plt.plot(history_loss)
         plt.show()
 
-        plt.plot(indexes, history_acc)
+        plt.title("Text Accuracy History")
+        plt.plot(history_acc)
         plt.show()
 
         return model, tokenizer

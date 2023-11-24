@@ -27,5 +27,5 @@ def only_audio():
     model = get_model()
     train_dataloader, test_dataloader = get_dataloaders()
     AudioTrainer.train(model, train_dataloader, len(emotions))
-    torch.save(model, os.path.join(CONFIG.saved_models_location(), "audio_model.pt"))
     AudioTrainer.eval(model, test_dataloader)
+    torch.save(model, os.path.join(CONFIG.saved_models_location(), "audio_model.pt"))
