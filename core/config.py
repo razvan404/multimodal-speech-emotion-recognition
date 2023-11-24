@@ -47,3 +47,7 @@ class CONFIG:
     @classmethod
     def saved_models_location(cls):
         return cls._dict["models"]["save_location"]
+
+    @classmethod
+    def pretrained_alexnet_url(cls):
+        return cls._dict["models"]["pretrained_alexnet"]

@@ -7,7 +7,7 @@ dataset_specific:
     preprocessed:
       dir: "Preprocessed"
       file: "audio_and_text.csv"
-    emotions: ["ang", neu", "sad", "hap"]
+    emotions: ["ang", exc", "sad", "fru"]
 dataloader:
   batch_size: 1
   shuffle: true

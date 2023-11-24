@@ -29,5 +29,6 @@ venv/
 Icon
 ._*
 
-# datasets
+# data
 data
+saved_models

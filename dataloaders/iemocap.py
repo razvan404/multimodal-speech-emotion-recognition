@@ -21,7 +21,7 @@ class IemocapDataset(Dataset):
         self._emotions = np.array(emotions)
         self._dataframe = pd.read_csv(audio_and_text_csv)
         self._dataframe = self._dataframe[self._dataframe["emotion"].isin(emotions)][
-            0::20
+            ::24
         ]
         rows_80_percent = int(0.8 * len(self._dataframe))
         if division == "train":
