@@ -7,12 +7,12 @@ dataset_specific:
     preprocessed:
       dir: "Preprocessed"
       file: "audio_and_text.csv"
-    emotions: ["ang", "fru", "neu", "sur", "sad", "exc", "hap", "fea", "dis", "oth"]
+    emotions: ["ang", neu", "sad", "hap"]
 dataloader:
-  batch_size: 16
+  batch_size: 1
   shuffle: true
 train:
   experiment_id: 1
 models:
   pretrained_alexnet: "https://download.pytorch.org/models/alexnet-owt-4df8aa71.pth"
-
+  save_location: "saved_models"

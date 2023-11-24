@@ -43,3 +43,7 @@ class CONFIG:
     @classmethod
     def dataset_emotions(cls):
         return cls._dict["dataset_specific"][cls._dict["dataset"]["name"]]["emotions"]
+
+    @classmethod
+    def saved_models_location(cls):
+        return cls._dict["models"]["save_location"]
