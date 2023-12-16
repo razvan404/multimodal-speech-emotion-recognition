@@ -3,32 +3,31 @@ import torch
 import logging
 from core.config import CONFIG
 from scripts.get_dataloaders import get_dataloaders
-from scripts.get_hf_datasets import get_hf_datasets
+from text.bert import Bert, BertTokenizer
+from text.deberta import DebertaV3, DebertaV3Tokenizer
 from text.train import TextTrainer
-from text.deberta import TextTrainerDebertaV3
 
 logger = logging.getLogger(__name__)
 
 
-def only_text():
+def only_text(model_class, tokenizer_class, save_path: str):
     logger.info("Getting the dataloaders..")
     train_dataloader, test_dataloader = get_dataloaders()
     logger.info("Starting the training process..")
-    model, tokenizer = TextTrainer.train(train_dataloader)
+    num_classes = len(CONFIG.dataset_emotions())
+    model = model_class(num_classes)
+    tokenizer = tokenizer_class()
+    trainer = TextTrainer(model, tokenizer)
+    trainer.train(train_dataloader)
     logger.info("Evaluating..")
-    TextTrainer.eval(model, tokenizer, test_dataloader)
+    trainer.eval(test_dataloader)
     logger.info("Saving the model..")
-    torch.save(model, os.path.join(
-        CONFIG.saved_models_location(), "text_model.pt"))
+    torch.save(model, os.path.join(CONFIG.saved_models_location(), save_path))
 
 
-def deberta():
-    logger.info("Getting the dataloaders..")
-    train_ds, test_ds = get_hf_datasets()
-    logger.info("Starting the training process..")
-    model = TextTrainerDebertaV3.train(train_ds.get_hf_dataset())
-    logger.info("Evaluating..")
-    TextTrainerDebertaV3.eval(test_ds.get_hf_dataset())
-    logger.info("Saving the model..")
-    torch.save(model, os.path.join(
-        CONFIG.saved_models_location(), "deberta_model.pt"))
+def only_text_using_bert():
+    only_text(Bert, BertTokenizer, "bert_model.pt")
+
+
+def only_text_using_deberta():
+    only_text(DebertaV3, DebertaV3Tokenizer, "debertaV3_model.pt")

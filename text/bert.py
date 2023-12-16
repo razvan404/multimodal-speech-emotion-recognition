@@ -1,14 +1,16 @@
-from transformers import BertForSequenceClassification, AdamW, BertConfig, BertTokenizer
+from transformers import BertForSequenceClassification, BertTokenizer as Tokenizer
+
+BERT_MODEL_NAME = "bert-base-uncased"
 
 
-def BERT(num_classes: int):
+def Bert(num_classes: int):
     return BertForSequenceClassification.from_pretrained(
-        "bert-base-uncased",
+        BERT_MODEL_NAME,
         num_labels=num_classes,
         output_attentions=False,
         output_hidden_states=False,
     )
 
 
-def Tokenizer():
-    return BertTokenizer.from_pretrained("bert-base-uncased")
+def BertTokenizer():
+    return Tokenizer.from_pretrained(BERT_MODEL_NAME)

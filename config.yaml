@@ -11,8 +11,7 @@ dataset_specific:
 dataloader:
   batch_size: 1
   shuffle: true
-train:
-  experiment_id: 1
+  num_workers: 12
 models:
   pretrained_alexnet: "https://download.pytorch.org/models/alexnet-owt-4df8aa71.pth"
   save_location: "saved_models"
