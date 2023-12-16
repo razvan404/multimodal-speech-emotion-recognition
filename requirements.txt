@@ -12,3 +12,4 @@ tensorboardX~=2.6.2.2
 scikit-learn~=1.3.2
 sentencepiece~=0.1.99
 tqdm~=4.66.1
+joblib~=1.3.2

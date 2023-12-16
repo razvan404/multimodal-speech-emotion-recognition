@@ -4,13 +4,10 @@ dataset:
   name: "IEMOCAP"
 dataset_specific:
   IEMOCAP:
-    preprocessed:
-      dir: "Preprocessed"
-      file: "audio_and_text.csv"
+    preprocessed_dir: "Preprocessed"
     emotions: ["ang", "fru", "neu", "sur", "sad", "exc", "hap", "fea", "dis", "oth"]
 dataloader:
-  batch_size: 1
-  shuffle: true
+  batch_size: 32
   num_workers: 12
 models:
   pretrained_alexnet: "https://download.pytorch.org/models/alexnet-owt-4df8aa71.pth"

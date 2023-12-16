@@ -18,14 +18,12 @@ class TextTrainer:
     def __init__(
         self,
         text_model: nn.Module,
-        tokenizer: callable,
         num_epochs: int = 3,
         epochs_print: int = 20,
         learning_rate: float = 2e-5,
         loss: callable = nn.CrossEntropyLoss(),
     ):
         self._text_model = text_model
-        self._tokenizer = tokenizer
         self._num_epochs = num_epochs
         self._epochs_print = epochs_print
         self._learning_rate = learning_rate
@@ -34,10 +32,7 @@ class TextTrainer:
         )
         self.loss = loss
 
-    def train(
-        self,
-        train_dataloader: DataLoader,
-    ):
+    def train(self, train_dataloader: DataLoader):
         logger.info("Initializing the text configurations...")
         total_steps = (
             len(train_dataloader) * train_dataloader.batch_size * self._num_epochs
@@ -51,38 +46,31 @@ class TextTrainer:
 
         logger.info("Training the text model...")
         self._text_model.train()
-        for epoch in range(self._num_epochs):
-            epoch_loss = 0
-            epoch_acc = 0.0
-            loader = tqdm.tqdm(
-                enumerate(train_dataloader, start=1), desc=f"Epoch {epoch}"
-            )
-            for train_step, batch in loader:
-                text, emotion = batch[1], batch[2][0]
-                input_tokens = torch.tensor(
-                    self._tokenizer.encode(
-                        text, add_special_tokens=True, is_split_into_words=True
-                    )
-                ).unsqueeze(0)
-                self._text_model.zero_grad()
-                logits = self._text_model(input_tokens)[0]
+        for epoch in range(1, self._num_epochs + 1):
+            loader = tqdm.tqdm(train_dataloader, desc=f"Epoch {epoch}")
+            for batch in loader:
+                # Forward
+                text, emotion = batch[1], batch[2]
+                logits = self._text_model(text)[0]
                 loss = self.loss(logits, emotion)
+
+                # Backward
+                self._optimizer.zero_grad()
                 loss.backward()
                 torch.nn.utils.clip_grad_norm_(self._text_model.parameters(), 1.0)
                 self._optimizer.step()
                 scheduler.step()
-                _, preds = torch.max(logits, 1)
-                accuracy = torch.sum(preds == emotion)
 
+                # Perform the accuracy
+                _, preds = torch.max(logits, dim=1)
+                accuracy = torch.mean((preds == emotion).float())
+
+                # Register the metrics
                 loss = loss.item()
                 accuracy = accuracy.item()
                 history_loss.append(loss)
                 history_acc.append(accuracy)
-                epoch_loss += loss
-                epoch_acc += accuracy
-                loader.set_postfix(
-                    loss=epoch_loss / train_step, accuracy=epoch_acc / train_step
-                )
+                loader.set_postfix(loss=loss, accuracy=accuracy)
 
         self.plot_histories(history_loss, history_acc)
 
@@ -105,10 +93,9 @@ class TextTrainer:
         self._text_model.eval()
         for batch in test_dataloader:
             text, emotion = batch[1], batch[2]
-            input_tokens = torch.tensor(self._tokenizer.encode(text)).unsqueeze(0)
 
             with torch.no_grad():
-                result = self._text_model(input_tokens, labels=emotion)
+                result = self._text_model(text, labels=emotion)
                 loss, logits = result[0], result[1]
                 _, preds = torch.max(logits, 1)
                 y_actual.append(emotion.numpy()[0])
