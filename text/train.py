@@ -7,7 +7,7 @@ import logging
 import tqdm
 
 from torch.utils.data.dataloader import DataLoader
-from sklearn.metrics import confusion_matrix
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 
 from vizualisers.plots import PlotVisualizer
 
@@ -87,21 +87,24 @@ class TextTrainer:
         )
         plt.show()
 
-    def eval(self, test_dataloader: DataLoader):
+    def eval(self, test_dataloader: DataLoader, labels: list[str] = None):
         y_actual = []
         y_pred = []
         self._text_model.eval()
-        for batch in test_dataloader:
-            text, emotion = batch[1], batch[2]
-
-            with torch.no_grad():
-                result = self._text_model(text, labels=emotion)
-                loss, logits = result[0], result[1]
+        with torch.no_grad():
+            loader = tqdm.tqdm(test_dataloader, "Evaluating the model")
+            for batch in loader:
+                text, emotion = batch[1], batch[2]
+                logits = self._text_model(text)[0]
                 _, preds = torch.max(logits, 1)
-                y_actual.append(emotion.numpy()[0])
-                y_pred.append(preds.numpy()[0])
+                y_actual += emotion.numpy().tolist()
+                y_pred += preds.numpy().tolist()
 
+        print(len(y_actual), len(y_pred))
+        possible_values = sorted({*y_actual, *y_pred})
+        possible_labels = [
+            label for i, label in enumerate(labels) if i in possible_values
+        ]
         conf_matrix = confusion_matrix(y_actual, y_pred)
-        print("Confusion matrix for test data:")
-        print(conf_matrix)
-        print("Accuracy:", np.sum(np.diag(conf_matrix)) / np.sum(np.diag()))
+        print("Accuracy:", np.sum(np.diag(conf_matrix)) / np.sum(conf_matrix))
+        PlotVisualizer.plot_confusion_matrix(conf_matrix, possible_labels)

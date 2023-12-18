@@ -43,12 +43,12 @@ def process_audio_data_to_pickle(in_filename: str, out_filename: str, extractor)
         delayed(_extract_data_from_audio)(audio_path)
         for audio_path in tqdm(dataframe["audio"], desc="Turning audio into MFCCs")
     )
-    max_audio_length = np.max([audio.shape for audio in extracted_features])
+    max_audio_length = np.max([audio.shape[1] for audio in extracted_features])
     extracted_features = list(
         map(
             lambda audio: np.pad(
                 audio,
-                (0, max_audio_length - len(audio)),
+                ((0, 0), (0, max_audio_length - audio.shape[1])),
                 "constant",
                 constant_values=0,
             ),
@@ -65,12 +65,14 @@ def process_text_data_to_pickle(in_filename: str, out_filename: str, tokenizer):
 
     max_text_length = dataframe["text"].apply(len).max()
     dataframe["text"] = dataframe["text"].apply(
-        lambda text: tokenizer.encode(
-            text,
-            add_special_tokens=True,
-            truncation=True,
-            padding="max_length",
-            max_length=max_text_length,
+        lambda text: np.array(
+            tokenizer.encode(
+                text,
+                add_special_tokens=True,
+                truncation=True,
+                padding="max_length",
+                max_length=max_text_length,
+            )
         )
     )
     dataframe.to_pickle(os.path.join(preprocessed_dir, out_filename))

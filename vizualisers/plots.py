@@ -1,4 +1,5 @@
 from matplotlib import pyplot as plt
+from sklearn.metrics import ConfusionMatrixDisplay
 
 
 class PlotVisualizer:
@@ -13,3 +14,10 @@ class PlotVisualizer:
         for idx, arg in enumerate(args, start=1):
             plt.subplot(*dims, idx)
             arg()
+
+    @classmethod
+    def plot_confusion_matrix(
+        cls, confusion_matrix: list[list[int]], labels: list[str]
+    ):
+        ConfusionMatrixDisplay(confusion_matrix, display_labels=labels).plot()
+        plt.show()

@@ -29,7 +29,7 @@ venv/
 Icon
 ._*
 
-# data
+# Project
 data
 saved_models
-hf_results
+pictures

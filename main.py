@@ -4,9 +4,10 @@ import numpy as np
 import torch
 
 from audio.extractor import MfccExtractor
+from audio.timnet import TimNetClassifier
 from core.config import CONFIG
-from scripts.only_audio import only_audio
-from scripts.only_text import only_text_using_bert, only_text_using_deberta
+from scripts.only_audio import train_audio
+from scripts.only_text import train_text, eval_text
 from scripts.preprocess_data import (
     process_audio_data_to_pickle,
     process_raw_data_to_pickle,
@@ -15,7 +16,7 @@ from scripts.preprocess_data import (
 from scripts.text_and_audio import text_and_audio
 import logging
 
-from text.deberta import DebertaV3Tokenizer
+from text.deberta import DebertaV3Tokenizer, DebertaV3
 
 logging.basicConfig(level=logging.INFO)
 
@@ -43,8 +44,10 @@ if __name__ == "__main__":
     #     "mfccs_and_text.pkl", "mfccs_and_tokens.pkl", DebertaV3Tokenizer()
     # )
     # 4. Train the only text model
-    only_text_using_deberta()
+    # train_text(DebertaV3, "deberta_model.pt")
+    # 4.1. Evaluate the text model
+    eval_text("deberta_model.pt")
     # 5. Train the only audio model
-    # only_audio()
+    # train_audio(TimNetClassifier, "timnet_model.pt")
     # 6. Train the fusion model
     # text_and_audio()

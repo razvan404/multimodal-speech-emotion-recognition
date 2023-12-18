@@ -37,6 +37,9 @@ class IemocapDataset(Dataset):
             emotions_str += f"{emotion} - {self._dataframe[self._dataframe['emotion'] == emotion]['emotion'].count()} | "
         emotions_str = emotions_str[:-3]
         logger.info(f"Each emotion percentages: {emotions_str}")
+        logger.info(
+            f"Shapes: audio - {self._dataframe['audio'].iloc[0].shape}; text - {self._dataframe['text'].iloc[0].shape}"
+        )
 
     def __getitem__(self, index: int):
         audio, text, emotion = self._dataframe.iloc[index]

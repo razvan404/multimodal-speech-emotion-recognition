@@ -76,3 +76,16 @@ def modified_alexnet(
         state_dict = load_state_dict_from_url(model_url, progress=progress)
         model.load_state_dict(state_dict)
     return model
+
+
+def get_pretrained_alexnet_model(alexnet_url, num_classes: int):
+    original_model = alexnet(alexnet_url, pretrained=True)
+    original_dict = original_model.state_dict()
+    modified_model = modified_alexnet(pretrained=False, num_classes=num_classes)
+    modified_model_dict = modified_model.state_dict()
+    pretrained_modified_model_dict = {
+        key: value for key, value in original_dict.items() if key in modified_model_dict
+    }
+    modified_model_dict.update(pretrained_modified_model_dict)
+    modified_model.load_state_dict(modified_model_dict)
+    return modified_model
