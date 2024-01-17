@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from typing import List
 
 
 class TemporalAwareBlock(nn.Module):
@@ -68,7 +69,7 @@ class TimNet(nn.Module):
     def __init__(
         self,
         in_channels: int,
-        filters_size: list[int] = None,
+        filters_size: List[int] = None,
         kernel_size: int = 2,
         stack_size: int = 1,
         dilation_size: int = 4,
@@ -141,7 +142,7 @@ class TimNetClassifier(nn.Module):
         self,
         in_filters: int,
         num_classes: int,
-        filters_size: list[int] = None,
+        filters_size: List[int] = None,
         kernel_size: int = 2,
         stack_size: int = 1,
         dilation_size: int = 4,

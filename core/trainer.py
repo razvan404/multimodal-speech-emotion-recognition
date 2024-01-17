@@ -7,6 +7,7 @@ import torch.nn as nn
 import transformers
 from matplotlib import pyplot as plt
 from sklearn.metrics import confusion_matrix
+from typing import List
 
 from torch.utils.data import DataLoader
 
@@ -72,7 +73,7 @@ class AbstractTrainer:
         self.plot_histories(history_loss, history_acc)
 
     def plot_histories(
-        self, history_losses: list[float], history_accuracies: list[float]
+        self, history_losses: List[float], history_accuracies: List[float]
     ):
         PlotVisualizer.plot_many(
             (1, 2),
@@ -84,7 +85,7 @@ class AbstractTrainer:
             ),
         )
 
-    def eval(self, test_dataloader: DataLoader, labels: list[str] = None):
+    def eval(self, test_dataloader: DataLoader, labels: List[str] = None):
         y_actual = []
         y_pred = []
         self.model.eval()

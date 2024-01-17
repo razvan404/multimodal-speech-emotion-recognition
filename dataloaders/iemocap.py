@@ -3,6 +3,7 @@ import logging
 import numpy as np
 import pandas as pd
 import torch.nn.functional
+from typing import List
 
 from torch.utils.data import Dataset, DataLoader
 
@@ -14,7 +15,7 @@ class IemocapDataset(Dataset):
         self,
         dataset_path: str,
         dataframe: pd.DataFrame,
-        emotions: list[str],
+        emotions: List[str],
         split: str,
     ):
         self._dataset_path = dataset_path
@@ -53,7 +54,7 @@ class IemocapDataset(Dataset):
 def IemocapDataLoader(
     dataset_path: str,
     dataframe: pd.DataFrame,
-    emotions: list[str],
+    emotions: List[str],
     split: str,
     **kwargs,
 ):

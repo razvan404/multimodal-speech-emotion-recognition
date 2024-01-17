@@ -1,6 +1,8 @@
 import torch
 from torch import nn
 
+from typing import List
+
 from audio.wav2vec2 import Wav2Vec2
 from text.deberta import DebertaV3
 
@@ -11,7 +13,7 @@ class FusionModel(nn.Module):
         num_classes: int,
         deberta_model: DebertaV3,
         wav2vec2_model: Wav2Vec2,
-        hidden_layers: list[int] = None,
+        hidden_layers: List[int] = None,
         freeze_weights: bool = True,
     ):
         super(FusionModel, self).__init__()

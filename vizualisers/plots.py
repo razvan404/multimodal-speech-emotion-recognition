@@ -1,10 +1,11 @@
 from matplotlib import pyplot as plt
 from sklearn.metrics import ConfusionMatrixDisplay
+from typing import List
 
 
 class PlotVisualizer:
     @classmethod
-    def plot_history(cls, history: list[float], title: str):
+    def plot_history(cls, history: List[float], title: str):
         plt.plot(history)
         plt.title(title)
 
@@ -18,7 +19,7 @@ class PlotVisualizer:
 
     @classmethod
     def plot_confusion_matrix(
-        cls, confusion_matrix: list[list[int]], labels: list[str]
+        cls, confusion_matrix: List[List[int]], labels: List[str]
     ):
         ConfusionMatrixDisplay(confusion_matrix, display_labels=labels).plot()
         plt.show()

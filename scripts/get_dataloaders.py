@@ -4,10 +4,11 @@ import pandas as pd
 
 from core.config import CONFIG
 from dataloaders.iemocap import IemocapDataLoader
+from typing import List
 
 
 def get_dataloader(
-    split: str | list[str] | None = None, shuffle: bool | list[bool] | None = None
+    split: str | List[str] | None = None, shuffle: bool | List[bool] | None = None
 ):
     if split is None:
         split = ["train", "test"]
