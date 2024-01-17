@@ -15,4 +15,7 @@
 
 ## Dataset
 
-You can download the IEMOCAP dataset from [here](https://www.kaggle.com/datasets/dejolilandry/iemocapfullrelease).
+You can download the dataset from:
+- [kaggle](https://www.kaggle.com/datasets/dejolilandry/iemocapfullrelease) - unofficial version
+- [official website](https://sail.usc.edu/iemocap/iemocap_release.htm) - official version, available upon request
+

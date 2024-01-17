@@ -59,7 +59,7 @@ class AbstractTrainer:
                 scheduler.step()
 
                 # Perform the accuracy
-                _, preds = torch.max(logits, dim=1)
+                preds = pmax(logits, dim=1)
                 accuracy = torch.mean((preds == real).float())
 
                 # Register the metrics
@@ -83,7 +83,6 @@ class AbstractTrainer:
                 history_accuracies, f"{self._name} accuracy history"
             ),
         )
-        plt.show()
 
     def eval(self, test_dataloader: DataLoader, labels: list[str] = None):
         y_actual = []
@@ -93,7 +92,7 @@ class AbstractTrainer:
             loader = tqdm.tqdm(test_dataloader, "Evaluating the model")
             for batch in loader:
                 logits, real = self._get_logits_and_real(batch)
-                _, preds = torch.max(logits, 1)
+                preds = torch.argmax(logits, dim=1)
                 y_actual += real.numpy().tolist()
                 y_pred += preds.numpy().tolist()
 
