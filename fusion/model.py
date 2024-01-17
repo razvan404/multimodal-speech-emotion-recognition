@@ -31,7 +31,7 @@ class FusionModel(nn.Module):
         )
         for i in range(0, len(hidden_layers) - 1):
             self.mlp_head.append(nn.Linear(hidden_layers[i], hidden_layers[i + 1]))
-        self.cls_head = nn.Linear(hidden_layers[-1], num_classes + 1)
+        self.cls_head = nn.Linear(hidden_layers[-1], num_classes)
         self.softmax = nn.Softmax(dim=1)
 
     def forward(self, text: torch.Tensor, audio: torch.Tensor):
