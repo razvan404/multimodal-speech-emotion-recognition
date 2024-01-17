@@ -7,6 +7,8 @@ from audio.trainer import AudioTrainer
 from audio.wav2vec2 import Wav2Vec2
 from core.config import CONFIG
 from core.trainer import AbstractTrainer
+from fusion.model import FusionModel
+from fusion.trainer import FusionTrainer
 from scripts.get_dataloaders import get_dataloader
 from text.deberta import DebertaV3
 from text.trainer import TextTrainer
@@ -54,6 +56,35 @@ class TrainerOps:
         else:
             model = Wav2Vec2(num_classes)
         return AudioTrainer(model)
+
+    @classmethod
+    def create_or_load_fusion_trainer(
+        cls,
+        load_path: str = None,
+        audio_model: Wav2Vec2 = None,
+        text_model: DebertaV3 = None,
+        load_state_dict: bool = False,
+    ):
+        num_classes = len(CONFIG.dataset_emotions())
+        if audio_model is None:
+            audio_model = Wav2Vec2(num_classes)
+        if text_model is None:
+            # TODO: train again the deberta model for 6 classes and remove + 4
+            text_model = DebertaV3(num_classes + 4)
+        if load_path is not None:
+            if load_state_dict:
+                model = FusionModel(num_classes, text_model, audio_model)
+                state_dict = torch.load(
+                    os.path.join(CONFIG.saved_models_location(), load_path)
+                )
+                model.load_state_dict(state_dict)
+            else:
+                model = torch.load(
+                    os.path.join(CONFIG.saved_models_location(), load_path)
+                )
+        else:
+            model = FusionModel(num_classes, text_model, audio_model)
+        return FusionTrainer(model)
 
     @classmethod
     def train(cls, trainer: AbstractTrainer):

@@ -1,53 +1,56 @@
 import torch
 from torch import nn
-from transformers import BertTokenizer
+
+from audio.wav2vec2 import Wav2Vec2
+from text.deberta import DebertaV3
 
 
-class CombinedAudioTextModel(nn.Module):
-    def _hook_text(self, module, inputs, outputs):
-        self._outputs_text.clear()
-        self._outputs_text.append(outputs)
-        return None
-
-    def _hook_audio(self, module, inputs, outputs):
-        self._outputs_audio.clear()
-        self._outputs_audio.append(outputs)
-        return None
-
-    def __init__(self, num_classes: int):
-        self._outputs_text = []
-        self._outputs_audio = []
-        super(CombinedAudioTextModel, self).__init__()
+class FusionModel(nn.Module):
+    def __init__(
+        self,
+        num_classes: int,
+        deberta_model: DebertaV3,
+        wav2vec2_model: Wav2Vec2,
+        hidden_layers: list[int] = None,
+        freeze_weights: bool = True,
+    ):
+        super(FusionModel, self).__init__()
+        if freeze_weights:
+            for param in deberta_model.parameters():
+                param.requires_grad = False
+            for param in wav2vec2_model.parameters():
+                param.requires_grad = False
+        if hidden_layers is None:
+            hidden_layers = [4096, 512, 64]
         self.num_classes = num_classes
-        self.tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
+        self.text_model = deberta_model
+        self.audio_model = wav2vec2_model
 
-        self.text_model = torch.load("saved_models/text_model.pt")
-        self.audio_model = torch.load("saved_models/audio_model.pt")
-
-        self.text_model.bert.pooler.register_forward_hook(self._hook_text)
-        self.audio_model.features.register_forward_hook(self._hook_audio)
-
-        for param in self.text_model.parameters():
-            param.requires_grad = False
-        for param in self.audio_model.parameters():
-            param.requires_grad = False
-
-        self.dropout = nn.Dropout(0.5)
-        self.linear = nn.Linear(1024, num_classes)
-
+        self.mlp_head = nn.Sequential(
+            nn.Linear(170 * 768 + 768 + num_classes * 2, hidden_layers[0])
+        )
+        for i in range(0, len(hidden_layers) - 1):
+            self.mlp_head.append(nn.Linear(hidden_layers[i], hidden_layers[i + 1]))
+        self.cls_head = nn.Linear(hidden_layers[-1], num_classes + 1)
         self.softmax = nn.Softmax(dim=1)
 
-    def forward(self, text, audio):
-        self.text_model(text)
-        self.audio_model(audio)
-        audio_embed = self._outputs_audio[0]
-        text_embed = self._outputs_text[0]
-        audio_embed = torch.flatten(
-            audio_embed, start_dim=2
-        )  # a1,a2,a3......al{a of dim c}
-        audio_embed = torch.sum(audio_embed, dim=2)
-        concat_embded = torch.cat((text_embed, audio_embed), 1)
-        x = self.dropout(concat_embded)
-        x = self.linear(x)
+    def forward(self, text: torch.Tensor, audio: torch.Tensor):
+        audio_features = self.audio_model.flatten(
+            self.audio_model.wav2vec2(audio).last_hidden_state
+        )
+        audio_classification = self.audio_model.softmax(
+            self.audio_model.cls_head(self.audio_model.lm_head(audio_features))
+        )
+        deberta_features = self.text_model.deberta(text).last_hidden_state
+        text_features = self.text_model.pooler(deberta_features)
+        text_classification = self.text_model.dropout(
+            self.text_model.classifier(text_features)
+        )[..., : self.num_classes]
+        x = torch.cat(
+            [audio_features, audio_classification, text_features, text_classification],
+            dim=1,
+        )
+        x = self.mlp_head(x)
+        x = self.cls_head(x)
         x = self.softmax(x)
         return x

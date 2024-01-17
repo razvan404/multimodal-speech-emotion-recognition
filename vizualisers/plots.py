@@ -14,6 +14,7 @@ class PlotVisualizer:
         for idx, arg in enumerate(args, start=1):
             plt.subplot(*dims, idx)
             arg()
+        plt.show()
 
     @classmethod
     def plot_confusion_matrix(

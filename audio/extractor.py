@@ -19,11 +19,6 @@ class MfccExtractor(AudioExtractor):
     nb_features = 13
 
     @classmethod
-    def _plot_wave(cls, x, sample_rate):
-        librosa.display.waveshow(y=x, sr=sample_rate, alpha=0.25, color="r")
-        plt.show()
-
-    @classmethod
     def extract(cls, audio_path: str):
         x, sample_rate = librosa.load(audio_path, res_type="kaiser_fast", sr=22050 * 2)
         mfccs = librosa.feature.mfcc(y=x, sr=sample_rate, n_mfcc=cls.nb_features)
