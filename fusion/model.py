@@ -23,7 +23,7 @@ class FusionModel(nn.Module):
             for param in wav2vec2_model.parameters():
                 param.requires_grad = False
         if hidden_layers is None:
-            hidden_layers = [4096, 512, 64]
+            hidden_layers = [512, 128, 32]
         self.num_classes = num_classes
         self.text_model = deberta_model
         self.audio_model = wav2vec2_model
