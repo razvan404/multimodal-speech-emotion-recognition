@@ -83,6 +83,7 @@ class AbstractTrainer:
             lambda: PlotVisualizer.plot_history(
                 history_accuracies, f"{self._name} accuracy history"
             ),
+            filename=f"{self._name}-losses.png",
         )
 
     def eval(self, test_dataloader: DataLoader, labels: List[str] = None):
@@ -103,4 +104,6 @@ class AbstractTrainer:
         ]
         conf_matrix = confusion_matrix(y_actual, y_pred)
         print("Accuracy:", np.sum(np.diag(conf_matrix)) / np.sum(conf_matrix))
-        PlotVisualizer.plot_confusion_matrix(conf_matrix, possible_labels)
+        PlotVisualizer.plot_confusion_matrix(
+            conf_matrix, possible_labels, filename=f"{self._name}-conf_matrix.png"
+        )
