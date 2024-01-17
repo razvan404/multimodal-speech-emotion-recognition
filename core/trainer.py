@@ -102,6 +102,10 @@ class AbstractTrainer:
         possible_labels = [
             label for i, label in enumerate(labels) if i in possible_values
         ]
+        if len(possible_labels) < len(possible_values):
+            possible_labels += ["unknown"] * (
+                len(possible_values) - len(possible_labels)
+            )
         conf_matrix = confusion_matrix(y_actual, y_pred)
         print("Accuracy:", np.sum(np.diag(conf_matrix)) / np.sum(conf_matrix))
         PlotVisualizer.plot_confusion_matrix(
