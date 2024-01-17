@@ -6,6 +6,8 @@ from core.trainer import AbstractTrainer
 
 logger = logging.getLogger(__name__)
 
+device = "cuda" if torch.cuda.is_available() else "cpu"
+
 
 class TextTrainer(AbstractTrainer):
     def __init__(
@@ -25,5 +27,7 @@ class TextTrainer(AbstractTrainer):
 
     def _get_logits_and_real(self, batch) -> (torch.Tensor, torch.Tensor):
         text, emotion = batch[1], batch[2]
+        text = text.to(device)
+        emotion = emotion.to(device)
         logits = self.model(text)[0]
         return logits, emotion

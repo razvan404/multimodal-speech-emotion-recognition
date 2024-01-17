@@ -6,6 +6,8 @@ from core.trainer import AbstractTrainer
 
 logger = logging.getLogger(__name__)
 
+device = "cuda" if torch.cuda.is_available() else "cpu"
+
 
 class FusionTrainer(AbstractTrainer):
     def __init__(
@@ -25,5 +27,8 @@ class FusionTrainer(AbstractTrainer):
 
     def _get_logits_and_real(self, batch) -> (torch.Tensor, torch.Tensor):
         audio, text, emotion = batch
+        audio = audio.to(device)
+        text = text.to(device)
+        emotion = emotion.to(device)
         logits = self.model(text, audio)
         return logits, emotion

@@ -15,6 +15,8 @@ from text.trainer import TextTrainer
 
 logger = logging.getLogger(__name__)
 
+device = "cuda" if torch.cuda.is_available() else "cpu"
+
 
 class TrainerOps:
     @classmethod
@@ -24,17 +26,19 @@ class TrainerOps:
         num_classes = len(CONFIG.dataset_emotions())
         if load_path is not None:
             if load_state_dict:
-                model = DebertaV3(num_classes)
+                model = DebertaV3(num_classes).to(device)
                 state_dict = torch.load(
-                    os.path.join(CONFIG.saved_models_location(), load_path)
+                    os.path.join(CONFIG.saved_models_location(), load_path),
+                    map_location=device
                 )
                 model.load_state_dict(state_dict)
             else:
                 model = torch.load(
-                    os.path.join(CONFIG.saved_models_location(), load_path)
+                    os.path.join(CONFIG.saved_models_location(), load_path),
+                    map_location=device
                 )
         else:
-            model = DebertaV3(num_classes)
+            model = DebertaV3(num_classes).to(device)
         return TextTrainer(model)
 
     @classmethod
@@ -44,17 +48,19 @@ class TrainerOps:
         num_classes = len(CONFIG.dataset_emotions())
         if load_path is not None:
             if load_state_dict:
-                model = Wav2Vec2(num_classes)
+                model = Wav2Vec2(num_classes).to(device)
                 state_dict = torch.load(
-                    os.path.join(CONFIG.saved_models_location(), load_path)
+                    os.path.join(CONFIG.saved_models_location(), load_path),
+                    map_location=device
                 )
                 model.load_state_dict(state_dict)
             else:
                 model = torch.load(
-                    os.path.join(CONFIG.saved_models_location(), load_path)
+                    os.path.join(CONFIG.saved_models_location(), load_path),
+                    map_location=device
                 )
         else:
-            model = Wav2Vec2(num_classes)
+            model = Wav2Vec2(num_classes).to(device)
         return AudioTrainer(model)
 
     @classmethod
@@ -67,23 +73,24 @@ class TrainerOps:
     ):
         num_classes = len(CONFIG.dataset_emotions())
         if audio_model is None:
-            audio_model = Wav2Vec2(num_classes)
+            audio_model = Wav2Vec2(num_classes).to(device)
         if text_model is None:
-            # TODO: train again the deberta model for 6 classes and remove + 4
-            text_model = DebertaV3(num_classes + 4)
+            text_model = DebertaV3(num_classes).to(device)
         if load_path is not None:
             if load_state_dict:
-                model = FusionModel(num_classes, text_model, audio_model)
+                model = FusionModel(num_classes, text_model, audio_model).to(device)
                 state_dict = torch.load(
-                    os.path.join(CONFIG.saved_models_location(), load_path)
+                    os.path.join(CONFIG.saved_models_location(), load_path),
+                    map_location=device
                 )
                 model.load_state_dict(state_dict)
             else:
                 model = torch.load(
-                    os.path.join(CONFIG.saved_models_location(), load_path)
+                    os.path.join(CONFIG.saved_models_location(), load_path),
+                    map_location=device
                 )
         else:
-            model = FusionModel(num_classes, text_model, audio_model)
+            model = FusionModel(num_classes, text_model, audio_model).to(device)
         return FusionTrainer(model)
 
     @classmethod
