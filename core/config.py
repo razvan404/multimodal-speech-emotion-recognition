@@ -37,8 +37,18 @@ class CONFIG:
 
     @classmethod
     def saved_models_location(cls):
-        return cls._dict["models"]["save_location"]
+        save_path = cls._dict["models"]["save_location"]
+        if not os.path.exists(save_path):
+            os.mkdir(save_path)
+        return save_path
 
     @classmethod
     def pretrained_alexnet_url(cls):
         return cls._dict["models"]["pretrained_alexnet"]
+
+    @classmethod
+    def save_plots_location(cls):
+        save_path = cls._dict["plots"]["save_location"]
+        if not os.path.exists(save_path):
+            os.mkdir(save_path)
+        return save_path

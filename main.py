@@ -58,7 +58,7 @@ if __name__ == "__main__":
         audio_model=audio_trainer.model, text_model=text_trainer.model
     )
     # 6.1. Train and save the fusion model
-    TrainerOps.train(fusion_trainer)
-    TrainerOps.save(fusion_trainer, "fusion_state_dict.pt", save_state_dict=True)
+    # TrainerOps.train(fusion_trainer)
+    # TrainerOps.save(fusion_trainer, "fusion_state_dict.pt", save_state_dict=True)
     # 6.2. Evaluate the fusion model
     TrainerOps.evaluate(fusion_trainer)
