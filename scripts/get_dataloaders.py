@@ -8,7 +8,7 @@ from typing import List
 
 
 def get_dataloader(
-    split: str | List[str] | None = None, shuffle: bool | List[bool] | None = None
+    split = None
 ):
     if split is None:
         split = ["train", "test"]

@@ -21,7 +21,7 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 class TrainerOps:
     @classmethod
     def create_or_load_text_trainer(
-        cls, load_path: str | None = None, load_state_dict: bool = False
+        cls, load_path = None, load_state_dict: bool = False
     ):
         num_classes = len(CONFIG.dataset_emotions())
         if load_path is not None:
@@ -43,7 +43,7 @@ class TrainerOps:
 
     @classmethod
     def create_or_load_audio_trainer(
-        cls, load_path: str | None = None, load_state_dict: bool = False
+        cls, load_path = None, load_state_dict: bool = False
     ):
         num_classes = len(CONFIG.dataset_emotions())
         if load_path is not None:
