@@ -95,8 +95,8 @@ class AbstractTrainer:
             for batch in loader:
                 logits, real = self._get_logits_and_real(batch)
                 preds = torch.argmax(logits, dim=1)
-                y_actual += real.numpy().tolist()
-                y_pred += preds.numpy().tolist()
+                y_actual += real.cpu().numpy().tolist()
+                y_pred += preds.cpu().numpy().tolist()
 
         possible_values = sorted({*y_actual, *y_pred})
         possible_labels = [
