@@ -5,7 +5,7 @@ dataset:
 dataset_specific:
   IEMOCAP:
     preprocessed_dir: "Preprocessed"
-    emotions: ["ang", "fru", "neu", "sur", "sad", "exc", "hap", "fea", "dis", "oth"]
+    emotions: ["ang", "fru", "neu", "sad", "exc", "hap"]
 dataloader:
   batch_size: 32
   num_workers: 12

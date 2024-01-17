@@ -44,7 +44,7 @@ class IemocapDataset(Dataset):
     def __getitem__(self, index: int):
         audio, text, emotion = self._dataframe.iloc[index]
         emotion_index = torch.tensor(np.where(self._emotions == emotion)[0][0])
-        return torch.tensor(audio), torch.tensor(text), emotion_index
+        return audio, text, emotion_index
 
     def __len__(self):
         return len(self._dataframe)

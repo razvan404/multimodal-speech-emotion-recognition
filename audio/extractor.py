@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 
 from scipy import signal
 from scipy.io import wavfile
+from transformers import Wav2Vec2Processor
 
 
 class AudioExtractor:
@@ -26,7 +27,7 @@ class MfccExtractor(AudioExtractor):
     def extract(cls, audio_path: str):
         x, sample_rate = librosa.load(audio_path, res_type="kaiser_fast", sr=22050 * 2)
         mfccs = librosa.feature.mfcc(y=x, sr=sample_rate, n_mfcc=cls.nb_features)
-        return mfccs
+        return np.mean(mfccs, axis=0)
 
 
 class Spectrogram3DExtractor(AudioExtractor):
@@ -85,3 +86,17 @@ class Spectrogram3DExtractor(AudioExtractor):
         spector = cls._get_3d_spec(spector)
         npimg = np.transpose(spector, (2, 0, 1))
         return torch.tensor(npimg)
+
+
+class Wav2Vec2Extractor(AudioExtractor):
+    _processor = Wav2Vec2Processor.from_pretrained("facebook/wav2vec2-base-960h")
+
+    @classmethod
+    def extract(cls, audio_path: str):
+        import torchaudio
+
+        raw_audio, sample_rate = torchaudio.load(audio_path)
+        input_features = cls._processor(
+            raw_audio, return_tensors="pt", sampling_rate=sample_rate
+        ).input_values
+        return input_features.flatten()
