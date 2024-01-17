@@ -8,7 +8,7 @@ from typing import List
 
 
 def get_dataloader(
-    split = None
+    split = None, shuffle = None,
 ):
     if split is None:
         split = ["train", "test"]
