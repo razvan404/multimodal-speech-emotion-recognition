@@ -14,7 +14,7 @@ def get_dataloader(
     if shuffle is None:
         shuffle = [True, False]
     dataframe = pd.read_pickle(
-        os.path.join(CONFIG.dataset_preprocessed_dir_path(), "mfccs_and_tokens.pkl")
+        os.path.join(CONFIG.dataset_preprocessed_dir_path(), "w2v2_and_tokens.pkl")
     )
     if isinstance(split, str):
         return IemocapDataLoader(

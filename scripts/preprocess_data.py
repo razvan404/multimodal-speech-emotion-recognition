@@ -41,17 +41,17 @@ def process_audio_data_to_pickle(in_filename: str, out_filename: str, extractor)
 
     extracted_features = Parallel(n_jobs=-1)(
         delayed(_extract_data_from_audio)(audio_path)
-        for audio_path in tqdm(dataframe["audio"], desc="Turning audio into MFCCs")
+        for audio_path in tqdm(dataframe["audio"], desc="Turning audio into W2V2s")
     )
-    max_audio_length = np.max([audio.shape[1] for audio in extracted_features])
+    max_audio_length = np.max([audio.shape[0] for audio in extracted_features])
     extracted_features = list(
         map(
             lambda audio: np.pad(
                 audio,
-                ((0, 0), (0, max_audio_length - audio.shape[1])),
+                (0, max_audio_length - audio.shape[0]),
                 "constant",
                 constant_values=0,
-            ),
+            )[..., : max_audio_length // 10],
             extracted_features,
         )
     )

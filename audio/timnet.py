@@ -68,26 +68,28 @@ class TimNet(nn.Module):
     def __init__(
         self,
         in_channels: int,
-        filter_size: int = 64,
+        filters_size: list[int] = None,
         kernel_size: int = 2,
         stack_size: int = 1,
-        dilation_size: int = 8,
+        dilation_size: int = 4,
         dropout_rate: float = 0.1,
     ):
         super(TimNet, self).__init__()
 
+        if filters_size is None:
+            filters_size = [64, 64, 64, 64, 64]
         self.dropout_rate = dropout_rate
         self.stack_size = stack_size
 
         self.forward_convd = nn.Conv1d(
             in_channels=in_channels,
-            out_channels=filter_size,
+            out_channels=filters_size[0],
             kernel_size=1,
             dilation=1,
         )
         self.backward_convd = nn.Conv1d(
             in_channels=in_channels,
-            out_channels=filter_size,
+            out_channels=filters_size[0],
             kernel_size=1,
             dilation=1,
         )
@@ -96,7 +98,11 @@ class TimNet(nn.Module):
         for i in range(dilation_size):
             self.tabs.append(
                 TemporalAwareBlock(
-                    filter_size, filter_size, kernel_size, 2**i, self.dropout_rate
+                    filters_size[i],
+                    filters_size[i + 1],
+                    kernel_size,
+                    2**i,
+                    self.dropout_rate,
                 )
             )
 
@@ -135,23 +141,23 @@ class TimNetClassifier(nn.Module):
         self,
         in_filters: int,
         num_classes: int,
-        filter_size: int = 64,
+        filters_size: list[int] = None,
         kernel_size: int = 2,
         stack_size: int = 1,
-        dilation_size: int = 8,
+        dilation_size: int = 4,
         dropout_rate: float = 0.1,
     ):
         super(TimNetClassifier, self).__init__()
         self.multi_decision_layer = TimNet(
             in_filters,
-            filter_size,
+            filters_size,
             kernel_size,
             stack_size,
             dilation_size,
             dropout_rate,
         )
-        self.classifier = nn.Linear(512, num_classes, bias=True)
-        self.softmax = nn.Softmax()
+        self.classifier = nn.Linear(960, num_classes, bias=True)
+        self.softmax = nn.Softmax(dim=1)
 
     def forward(self, x: torch.Tensor):
         x = self.multi_decision_layer(x)
