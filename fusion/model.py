@@ -29,7 +29,8 @@ class FusionModel(nn.Module):
         self.audio_model = wav2vec2_model
 
         self.mlp_head = nn.Sequential(
-            nn.Linear(170 * 768 + 768 + num_classes * 2, hidden_layers[0])
+            # TODO: Remove + 4 because is from the old DeBERTa model
+            nn.Linear(170 * 768 + 768 + num_classes * 2 + 4, hidden_layers[0])
         )
         for i in range(0, len(hidden_layers) - 1):
             self.mlp_head.append(nn.Linear(hidden_layers[i], hidden_layers[i + 1]))
@@ -47,7 +48,7 @@ class FusionModel(nn.Module):
         text_features = self.text_model.pooler(deberta_features)
         text_classification = self.text_model.dropout(
             self.text_model.classifier(text_features)
-        )[..., : self.num_classes]
+        )
         x = torch.cat(
             [audio_features, audio_classification, text_features, text_classification],
             dim=1,

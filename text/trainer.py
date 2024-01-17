@@ -2,11 +2,10 @@ import torch
 import torch.nn as nn
 import logging
 
+from core.config import device
 from core.trainer import AbstractTrainer
 
 logger = logging.getLogger(__name__)
-
-device = "cuda" if torch.cuda.is_available() else "cpu"
 
 
 class TextTrainer(AbstractTrainer):

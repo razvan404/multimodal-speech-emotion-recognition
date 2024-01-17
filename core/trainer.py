@@ -60,7 +60,7 @@ class AbstractTrainer:
                 scheduler.step()
 
                 # Perform the accuracy
-                preds = pmax(logits, dim=1)
+                preds = torch.argmax(logits, dim=1)
                 accuracy = torch.mean((preds == real).float())
 
                 # Register the metrics
