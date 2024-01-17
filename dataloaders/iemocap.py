@@ -28,7 +28,7 @@ class IemocapDataset(Dataset):
         if split == "train":
             self._dataframe = self._dataframe.iloc[:rows_80_percent, :]
         elif split == "test":
-            self._dataframe = self._dataframe.iloc[rows_80_percent:, :][:80]
+            self._dataframe = self._dataframe.iloc[rows_80_percent:, :]
         else:
             raise ValueError("Invalid dataset split")
 
